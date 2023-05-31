@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Storyboard Form</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-container">
+        <h1>Storyboard Form</h1>
+        <form id="storyboardForm">
+            <!-- Form fields will be dynamically generated here -->
+        </form>
+        <button id="generateVideoBtn" class="btn btn-primary">Generate Video</button>
+        <div id="videoContainer" style="display: none;">
+            <h2>Generated Video</h2>
+            <div id="idomoosPlayer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+
+<script>
+    // Step 1: Retrieve storyboard metadata API
+    $.ajax({
+        url: "https://dpwhj15d0k.execute-api.eu-west-1.amazonaws.com/storyboards/31193",
+        method: "GET",
+        success: function(response) {
+            var data = response.data;
+
+            // Step 2: Build the form accordingly
+            var formFields = "";
+            data.forEach(function(item) {
+                formFields += '<div class="form-group">';
+                formFields += '<label for="' + item.key + '">' + item.key + '</label>';
+                formFields += '<input type="text" class="form-control" id="' + item.key + '" placeholder="' + item.description + '">';
+                formFields += '</div>';
+            });
+            // Add dropdowns
+            formFields += '<div class="form-group">';
+            formFields += '<label for="videoFormat">Video Format</label>';
+            formFields += '<select class="form-control" id="videoFormat">';
+            formFields += '<option value="HLS">HLS</option>';
+            formFields += '<option value="MP4">MP4</option>';
+            formFields += '</select>';
+            formFields += '</div>';
+
+            formFields += '<div class="form-group">';
+            formFields += '<label for="resolution">Resolution</label>';
+            formFields += '<select class="form-control" id="resolution">';
+            formFields += '<option value="100">100% (1280 x 720)</option>';
+            formFields += '<option value="50">50% (640 x 360)</option>';
+            formFields += '</select>';
+            formFields += '</div>';
+
+            formFields += '<div class="form-group">';
+            formFields += '<label for="quality">Quality</label>';
+            formFields += '<select class="form-control" id="quality">';
+            formFields += '<option value="good">Good</option>';
+            formFields += '<option value="better">Better</option>';
+            formFields += '<option value="best">Best</option>';
+            formFields += '</select>';
+            formFields += '</div>';
+
+            $('#storyboardForm').append(formFields);
+        }
+    });
+
+    // Step 3: Generate the video using storyboard generation API
+    $('#generateVideoBtn').click(function() {
+        $.ajax({
+            url: "https://dpwhj15d0k.execute-api.eu-west-1.amazonaws.com/storyboards/generate",
+            method: "GET",
+            success: function(response) {
+                var videoUrl = response.output.video[0].links.url;
+                var checkStatusUrl = response.output.video[0].links.check_status_url;
+
+                // Step 4: Check if the video is ready
+                checkVideoStatus(checkStatusUrl);
+
+                // Step 5: Display the video using Idomo's player 2.0
+                $('#idomoosPlayer').html('<video width="640" height="360" controls><source src="' + videoUrl + '" type="video/mp4"></video>');
+                $('#videoContainer').show();
+            }
+        });
+    });
+
+    // Function to check video status
+    function checkVideoStatus(checkStatusUrl) {
+        $.ajax({
+            url: checkStatusUrl,
+            method: "GET",
+            success: function(response) {
+                if (response.status === "Success") {
+                    // Video is ready
+                    console.log("Video is ready.");
+                } else {
+                    // Video is still processing, check again after some time
+                    setTimeout(function() {
+                        checkVideoStatus(checkStatusUrl);
+                    }, 2000); // Check every 2 seconds
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
