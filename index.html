@@ -60,7 +60,7 @@
             // Add dropdowns
             formFields += '<div class="form-group">';
             formFields += '<label for="videoFormat">Video Format</label>';
-            formFields += '<select class="form-control" id="videoFormat">';
+            formFields += '<select class="form-control" id="videoFormat" name="videoFormat">';
             formFields += '<option value="HLS">HLS</option>';
             formFields += '<option value="MP4">MP4</option>';
             formFields += '</select>';
@@ -68,7 +68,7 @@
 
             formFields += '<div class="form-group">';
             formFields += '<label for="resolution">Resolution</label>';
-            formFields += '<select class="form-control" id="resolution">';
+            formFields += '<select class="form-control" id="resolution" name="resolution">';
             formFields += '<option value="100">100% (1280 x 720)</option>';
             formFields += '<option value="50">50% (640 x 360)</option>';
             formFields += '</select>';
@@ -76,7 +76,7 @@
 
             formFields += '<div class="form-group">';
             formFields += '<label for="quality">Quality</label>';
-            formFields += '<select class="form-control" id="quality">';
+            formFields += '<select class="form-control" id="quality" name="quality">';
             formFields += '<option value="good">Good</option>';
             formFields += '<option value="better">Better</option>';
             formFields += '<option value="best">Best</option>';
@@ -91,7 +91,6 @@
     $('#generateVideoBtn').click(function() {
         // Serialize the form data
         var formData = $('#storyboardForm').serialize();
-
         // Send the form data using POST request
         $.ajax({
             url: "https://dpwhj15d0k.execute-api.eu-west-1.amazonaws.com/storyboards/generate",
