@@ -22,6 +22,9 @@
     </style>
 </head>
 <body>
+<div id="videoContainer" style="display: none;">
+    <div id="idm_player" class="idm-player"></div>
+</div>
 <div class="container">
     <div class="form-container">
         <h1>Storyboard Form</h1>
@@ -29,16 +32,13 @@
             <!-- Form fields will be dynamically generated here -->
         </form>
         <button id="generateVideoBtn" class="btn btn-primary">Generate Video</button>
-        <div id="videoContainer" style="display: none;">
-            <h2>Generated Video</h2>
-            <div id="idomoosPlayer"></div>
-        </div>
     </div>
 </div>
 
 <!-- Include jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src= "https://player.idomoo.com/latest/main.js"></script>
 
 
 <script>
@@ -89,22 +89,45 @@
 
     // Step 3: Generate the video using storyboard generation API
     $('#generateVideoBtn').click(function() {
+        // Serialize the form data
+        var formData = $('#storyboardForm').serialize();
+
+        // Send the form data using POST request
         $.ajax({
             url: "https://dpwhj15d0k.execute-api.eu-west-1.amazonaws.com/storyboards/generate",
-            method: "GET",
+            method: "POST",
+            data: formData,
             success: function(response) {
+                // Handle the response
                 var videoUrl = response.output.video[0].links.url;
                 var checkStatusUrl = response.output.video[0].links.check_status_url;
 
                 // Step 4: Check if the video is ready
                 checkVideoStatus(checkStatusUrl);
 
-                // Step 5: Display the video using Idomo's player 2.0
-                $('#idomoosPlayer').html('<video width="640" height="360" controls><source src="' + videoUrl + '" type="video/mp4"></video>');
+                // Hide the form
+                hideFormElements();
+
+                var player_options_first = {
+                    size: "hd",
+                    src: videoUrl,
+                    interactive: true,
+                    autoplay: true,
+                    mute: true
+                };
+
+                idmPlayerCreate(player_options_first, "idm_player");
+
                 $('#videoContainer').show();
             }
         });
     });
+
+
+    // Function to hide form elements and show the video
+    function hideFormElements() {
+        $('.form-container').hide();
+    }
 
     // Function to check video status
     function checkVideoStatus(checkStatusUrl) {
@@ -112,8 +135,9 @@
             url: checkStatusUrl,
             method: "GET",
             success: function(response) {
-                if (response.status === "Success") {
+                if (response.status === "VIDEO_AVAILABLE") {
                     // Video is ready
+
                     console.log("Video is ready.");
                 } else {
                     // Video is still processing, check again after some time
