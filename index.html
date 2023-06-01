@@ -54,32 +54,33 @@
             data.forEach(function(item) {
                 formFields += '<div class="form-group">';
                 formFields += '<label for="' + item.key + '">' + item.key + '</label>';
-                formFields += '<input type="text" class="form-control" id="' + item.key + '" placeholder="' + item.description + '">';
+                formFields += '<input type="text" class="form-control" id="' + item.key + '" name="' + item.key + '" placeholder="' + item.description + '">';
                 formFields += '</div>';
             });
             // Add dropdowns
             formFields += '<div class="form-group">';
             formFields += '<label for="videoFormat">Video Format</label>';
             formFields += '<select class="form-control" id="videoFormat" name="videoFormat">';
-            formFields += '<option value="HLS">HLS</option>';
-            formFields += '<option value="MP4">MP4</option>';
+            formFields += '<option value="hls">HLS</option>';
+            formFields += '<option value="mp4">MP4</option>';
             formFields += '</select>';
             formFields += '</div>';
 
             formFields += '<div class="form-group">';
             formFields += '<label for="resolution">Resolution</label>';
             formFields += '<select class="form-control" id="resolution" name="resolution">';
-            formFields += '<option value="100">100% (1280 x 720)</option>';
-            formFields += '<option value="50">50% (640 x 360)</option>';
+            formFields += '<option value="1080">Full HD (1920 x 1080)</option>';
+            formFields += '<option value="720">HD (1280 x 720)</option>';
+            formFields += '<option value="480">SD (854 x 480)</option>';
             formFields += '</select>';
             formFields += '</div>';
 
             formFields += '<div class="form-group">';
             formFields += '<label for="quality">Quality</label>';
             formFields += '<select class="form-control" id="quality" name="quality">';
-            formFields += '<option value="good">Good</option>';
-            formFields += '<option value="better">Better</option>';
-            formFields += '<option value="best">Best</option>';
+            formFields += '<option value="10">Good</option>';
+            formFields += '<option value="26">Better</option>';
+            formFields += '<option value="50">Best</option>';
             formFields += '</select>';
             formFields += '</div>';
 
