@@ -91,6 +91,7 @@
     $('#generateVideoBtn').click(function() {
         // Serialize the form data
         var formData = $('#storyboardForm').serialize();
+        console.log('formData',formData)
         // Send the form data using POST request
         $.ajax({
             url: "https://dpwhj15d0k.execute-api.eu-west-1.amazonaws.com/storyboards/generate",
