@@ -90,14 +90,27 @@
 
     // Step 3: Generate the video using storyboard generation API
     $('#generateVideoBtn').click(function() {
-        // Serialize the form data
-        var formData = $('#storyboardForm').serialize();
-        console.log('formData',formData)
-        // Send the form data using POST request
+        // Create an empty object to store form data
+        var formData = {};
+
+        // Iterate over the form fields
+        $('#storyboardForm').find('input, select').each(function() {
+            var fieldName = $(this).attr('name');
+            var fieldValue = $(this).val();
+
+            // Add the field name and value to the formData object
+            formData[fieldName] = fieldValue;
+        });
+
+        // Convert the formData object to JSON string
+        var jsonData = JSON.stringify(formData);
+
+        // Send the JSON data using POST request
         $.ajax({
             url: "https://dpwhj15d0k.execute-api.eu-west-1.amazonaws.com/storyboards/generate",
             method: "POST",
-            data: formData,
+            data: jsonData,
+            contentType: "application/json",
             success: function(response) {
                 // Handle the response
                 var videoUrl = response.output.video[0].links.url;
@@ -123,6 +136,7 @@
             }
         });
     });
+
 
 
     // Function to hide form elements and show the video
